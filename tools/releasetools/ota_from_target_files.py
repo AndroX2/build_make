@@ -954,6 +954,21 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.AppendExtra("ifelse(is_mounted(\"/system\"), unmount(\"/system\"));")
   device_specific.FullOTA_InstallBegin()
 
+  CopyInstallTools(output_zip)
+  script.UnpackPackageDir("install", "/tmp/install")
+  script.SetPermissionsRecursive("/tmp/install", 0, 0, 0755, 0644, None, None)
+  script.SetPermissionsRecursive("/tmp/install/bin", 0, 0, 0755, 0755, None, None)
+
+  if OPTIONS.backuptool:
+    is_system_as_root = script.fstab["/system"].mount_point == "/"
+    if is_system_as_root:
+      script.fstab["/system"].mount_point = "/system"
+    script.Mount("/system")
+    script.RunBackup("backup", "/system/system" if is_system_as_root else "/system")
+    script.Unmount("/system")
+    if is_system_as_root:
+      script.fstab["/system"].mount_point = "/"
+
   system_progress = 0.75
 
   if OPTIONS.wipe_user_data:
@@ -1010,6 +1025,17 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
 
   device_specific.FullOTA_PostValidate()
+
+  if OPTIONS.backuptool:
+    script.ShowProgress(0.02, 10)
+    is_system_as_root = script.fstab["/system"].mount_point == "/"
+    if is_system_as_root:
+      script.fstab["/system"].mount_point = "/system"
+    script.Mount("/system")
+    script.RunBackup("restore", "/system/system" if is_system_as_root else "/system")
+    script.Unmount("/system")
+    if is_system_as_root:
+      script.fstab["/system"].mount_point = "/"
 
   script.ShowProgress(0.05, 5)
   script.WriteRawImage("/boot", "boot.img")
