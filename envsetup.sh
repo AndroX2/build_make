@@ -673,9 +673,9 @@ function lunch()
     if [ $? -ne 0 ]
     then
         echo
-        echo "** Can't find: '$product' on our device git"
-        echo "** Did device that you want to build have official build?"
-		echo "** Check your device name agasin. May you there is miss-spelling"
+        echo "** Can't find: '$product' on our devices git"
+        echo "** Is the device you want to build for listed on our official release candidate list?"
+		echo "**Please check the device codename again and fix any possible typos or errors."
         product=
     fi
 
