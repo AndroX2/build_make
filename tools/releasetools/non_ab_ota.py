@@ -220,6 +220,9 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   # Dump fingerprints
   script.Print("Target: {}".format(target_info.fingerprint))
 
+  script.Print("=====================================================");
+  script.Print("          conquerOS Sussy - Be The Conqueror         ");
+  script.Print("=====================================================");
   device_specific.FullOTA_InstallBegin()
 
   CopyInstallTools(output_zip)
